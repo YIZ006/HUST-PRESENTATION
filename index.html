@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUST Presentation Dashboard | Chủ Đề 10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --hust-red: #c8102e; 
+            --dark-gray: #1a1a1a;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --border: #ececec;
+            --text-body: #444444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--white); }
+        ::-webkit-scrollbar-thumb { background: var(--hust-red); border-radius: 10px; }
+
+        body { 
+            background-color: var(--white); 
+            color: var(--text-body); 
+            line-height: 1.7; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
+
+        /* ----- SIDE PANELS (TRANG TRÍ 2 BÊN) ----- */
+        .side-panel {
+            position: fixed; top: 0; width: 60px; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 5; pointer-events: none; background-color: var(--light-bg);
+            border: 1px solid var(--border);
+        }
+        .side-left { left: 0; }
+        .side-right { right: 0; }
+        .side-text { 
+            transform: rotate(-90deg); color: #ccc; 
+            font-weight: 800; letter-spacing: 10px; font-size: 14px; white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        /* ----- HEADER (TOP BAR) ----- */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95); padding: 10px 80px; display: flex;
+            justify-content: space-between; align-items: center; 
+            border-bottom: 4px solid var(--hust-red);
+            position: sticky; top: 0; z-index: 3000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+        }
+        .brand { display: flex; align-items: center; gap: 20px; }
+        
+        /* CẬP NHẬT HÌNH ẢNH CỜ */
+        .flag-group { display: flex; gap: 8px; align-items: center; }
+        .flag-img { width: 35px; height: auto; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee; }
+
+        .logo-text-box { border-left: 2px solid var(--border); padding-left: 15px; }
+        .logo-text-box h1 { color: var(--hust-red); font-weight: 900; font-size: 18px; line-height: 1; margin-bottom: 2px; }
+        .logo-text-box p { color: var(--dark-gray); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        .file-inputs { display: flex; gap: 12px; align-items: center; }
+        .btn-upload {
+            background: var(--hust-red); color: white; padding: 10px 18px;
+            border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.3s;
+            border: none; text-transform: uppercase;
+        }
+        .btn-upload:hover { background: #a00d25; transform: translateY(-2px); }
+        input[type="file"] { display: none; }
+        
+        .canva-input-group { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; background: var(--white); }
+        .canva-input-group input { background: transparent; border: none; padding: 8px 12px; width: 250px; outline: none; font-size: 12px; }
+        .canva-input-group button { background: var(--dark-gray); color: white; border: none; padding: 0 15px; font-weight: 700; cursor: pointer; font-size: 11px; }
+
+        /* ----- MAIN STAGE (CANVA EMBED) ----- */
+        .stage { padding: 40px 100px; background-color: var(--light-bg); border-bottom: 1px solid var(--border); }
+        .viewer-container {
+            width: 100%; max-width: 1100px; margin: 0 auto; height: 65vh; background: white;
+            border-radius: 12px; border: 1px solid var(--border); overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        #canvaFrame { width: 100%; height: 100%; border: none; }
+
+        /* ----- FIXED DRAGGABLE VIDEO ----- */
+        .video-corner {
+            position: fixed; bottom: 30px; right: 90px; width: 300px; aspect-ratio: 16/9;
+            background: #000; border: 3px solid var(--hust-red); border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 5000; cursor: move;
+            overflow: hidden;
+        }
+        video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        /* ----- CONTENT SECTIONS ----- */
+        .section-box { padding: 120px 0; }
+        .section-box:nth-child(even) { background-color: var(--light-bg); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        .row { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: center; opacity: 0; transform: translateY(40px); transition: 1.2s ease; }
+        .row.visible { opacity: 1; transform: translateY(0); }
+        .row.reverse { direction: rtl; }
+        .row.reverse .text-content { direction: ltr; }
+
+        .text-content h3 { font-size: 32px; color: var(--hust-red); margin-bottom: 25px; font-weight: 900; text-transform: uppercase; line-height: 1.2; }
+        .text-content p { font-size: 16px; color: var(--text-body); margin-bottom: 20px; text-align: justify; }
+        .highlight-box { background: #fff; padding: 20px; border-left: 4px solid var(--hust-red); box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-top: 20px; font-style: italic; }
+
+        .img-wrap { border-radius: 15px; overflow: hidden; height: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 6px solid white; }
+        .img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 2s ease; }
+        .row:hover img { transform: scale(1.1); }
+
+        /* ----- FORMULA SECTION ----- */
+        .formula-section { background: var(--hust-red); padding: 100px 0; text-align: center; color: white; position: relative; }
+        .formula-section::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.1; }
+        .formula-card { display: inline-block; padding: 40px 100px; background: white; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative; }
+        .formula-card h4 { font-size: 80px; color: var(--hust-red); font-weight: 900; letter-spacing: -2px; }
+        .formula-desc { margin-top: 35px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; font-size: 18px; }
+
+        /* ----- FOOTER ----- */
+        .footer { padding: 80px 0; text-align: center; background: var(--dark-gray); color: white; border-top: 10px solid #444; }
+        .footer h5 { color: var(--hust-red); letter-spacing: 5px; font-size: 18px; margin-bottom: 15px; font-weight: 900; }
+        .footer p { font-size: 13px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <div class="side-panel side-left"><div class="side-text">HANOI UNIVERSITY OF SCIENCE AND TECHNOLOGY</div></div>
+    <div class="side-panel side-right"><div class="side-text">TRƯỜNG KINH TẾ - ĐẠI HỌC BÁCH KHOA HÀ NỘI</div></div>
+
+    <div class="top-bar">
+        <div class="brand">
+            <div class="flag-group">
+                <img src="https://flagcdn.com/w80/vn.png" class="flag-img" alt="Vietnam Flag">
+                <img src="https://flagcdn.com/w80/jp.png" class="flag-img" alt="Japan Flag">
+            </div>
+            <div class="logo-text-box">
+                <h1>HUST PRESENTATION</h1>
+                <p>Kinh tế Chính trị Mác - Lênin | Chủ đề 10</p>
+            </div>
+        </div>
+        <div class="file-inputs">
+            <label class="btn-upload">🎥 NẠP VIDEO <input type="file" id="uploadVideo" accept="video/*"></label>
+            <div class="canva-input-group">
+                <input type="text" id="canvaUrl" placeholder="Dán mã HTML Canva (iFrame)..." />
+                <button onclick="loadCanva()">NHÚNG SLIDE</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="viewer-container">
+            <iframe id="canvaFrame" src="" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+        </div>
+    </div>
+
+    <div class="video-corner" id="videoDraggable">
+        <video id="vPlayer" controls></video>
+    </div>
+
+    <div class="scroll-content">
+        
+        <div class="section-box">
+            <div class="container">
+                <div class="row">
+                    <div class="text-content">
+                        <h3>01. <br>Nghịch lý viễn thông Việt - Nhật</h3>
+                        <p>Tại sao Nhật Bản có trình độ công nghệ 5G và hệ thống vận hành tự động bậc nhất nhưng giá cước lại cao hơn Việt Nam gấp nhiều lần? Câu hỏi này dẫn dắt chúng ta đi sâu vào bản chất của cấu thành giá trị hàng hóa.</p>
+                        <div class="highlight-box">
+                            "Giá cả không chỉ là con số, nó là sự kết tinh của hao phí lao động xã hội và các đặc thù kinh tế chính trị riêng biệt."
+                        </div>
+                    </div>
+                    <div class="img-wrap">
+                        <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1200" alt="Tokyo Tech">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-section">
+            <div class="container">
+                <div class="formula-card"><h4>G = c + v + m</h4></div>
+                <p class="formula-desc">Học thuyết giá trị Mác - Lênin</p>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="container">
+                <div class="row reverse">
+                    <div class="text-content">
+                        <h3>02. <br>Hao phí hạ tầng (c)</h3>
+                        <p><strong>Lao động quá khứ:</strong> Tại Nhật Bản, cấu phần <strong>c</strong> mang tính chất đặc thù địa lý. Chi phí xây dựng trạm phát sóng chống động đất và địa tô mặt bằng đắt đỏ tại Tokyo đẩy giá trị kết tinh lên ngưỡng khổng lồ.</p>
+                        <p>Khấu hao thiết bị công nghệ cao chu kỳ ngắn buộc các nhà mạng phải duy trì giá bán cao để thu hồi vốn tư liệu sản xuất.</p>
+                    </div>
+                    <div class="img-wrap">
+                        <img src="https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?q=80&w=1200" alt="Tower Infrastructure">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="container">
+                <div class="row">
+                    <div class="text-content">
+                        <h3>03. <br>Sức lao động (v)</h3>
+                        <p><strong>Lao động phức tạp:</strong> Ngành viễn thông yêu cầu kỹ sư có trình độ chuyên môn sâu. Marx khẳng định lao động phức tạp là bội số của lao động giản đơn.</p>
+                        <p>Giá trị sức lao động (v) tại Nhật Bản bao hàm cả chi phí sinh hoạt đắt đỏ để tái sản xuất sức lao động, trực tiếp làm tăng tổng giá trị dịch vụ đầu ra.</p>
+                    </div>
+                    <div class="img-wrap">
+                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200" alt="Engineering Center">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="container">
+                <div class="row reverse">
+                    <div class="text-content">
+                        <h3>04. <br>Giá trị thặng dư (m)</h3>
+                        <p><strong>Độc quyền nhóm:</strong> Thị trường viễn thông Nhật Bản nằm trong tay các tập đoàn lớn (NTT, SoftBank). Vị thế độc quyền giúp họ thiết lập giá cả độc quyền cao hơn giá trị thực tế để thu về thặng dư m cực đại.</p>
+                        <p>Ngược lại, Việt Nam là thị trường cạnh tranh cao, ép giá bán về sát chi phí sản xuất thực tế để thu hút số lượng lớn khách hàng.</p>
+                    </div>
+                    <div class="img-wrap">
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200" alt="Market Analysis">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h5>ĐẠI HỌC BÁCH KHOA HÀ NỘI</h5>
+        <p>Sinh viên thực hiện: Phạm Minh Chiến | Giảng viên Bộ môn Kinh tế Chính trị : Ngô Quế Lân | Mã học phần SSH1121.</p>
+        <p style="margin-top: 15px;">© 30/4/2026-31/5/2026 Final Year Project - HUST Department of Politics</p>
+    </div>
+
+    <script>
+        // XỬ LÝ NẠP VIDEO
+        document.getElementById('uploadVideo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) { document.getElementById('vPlayer').src = URL.createObjectURL(file); }
+        });
+
+        // XỬ LÝ NHÚNG CANVA (Lọc mã HTML)
+        function loadCanva() {
+            let inputVal = document.getElementById('canvaUrl').value.trim();
+            let finalUrl = "";
+            if (inputVal.includes("<iframe")) {
+                const srcMatch = inputVal.match(/src="([^"]+)"/);
+                if (srcMatch && srcMatch[1]) { finalUrl = srcMatch[1]; }
+            } else if (inputVal.includes("canva.com")) { finalUrl = inputVal; }
+            
+            if (finalUrl !== "") {
+                if (!finalUrl.includes("embed")) { 
+                    finalUrl = finalUrl.includes("?") ? finalUrl + "&embed" : finalUrl + "?embed"; 
+                }
+                document.getElementById('canvaFrame').src = finalUrl;
+            }
+        }
+
+        // KÉO THẢ VIDEO (DRAG & DROP)
+        const dragItem = document.getElementById("videoDraggable");
+        let active = false; let currentX, currentY, initialX, initialY; let xOffset = 0, yOffset = 0;
+        document.addEventListener("mousedown", dragStart); document.addEventListener("mouseup", dragEnd); document.addEventListener("mousemove", drag);
+        
+        function dragStart(e) {
+            if (e.target.closest('#videoDraggable')) {
+                initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true;
+            }
+        }
+        function dragEnd() { initialX = currentX; initialY = currentY; active = false; }
+        function drag(e) {
+            if (active) {
+                e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY;
+                xOffset = currentX; yOffset = currentY; dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
+
+        // HIỆU ỨNG CUỘN (FADE-IN)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.row').forEach(row => observer.observe(row));
+    </script>
+</body>
+</html>
