@@ -13,6 +13,7 @@
             --white: #ffffff;
             --border: #ececec;
             --text-body: #444444;
+            --chart-gold: #ffd700;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
@@ -81,28 +82,17 @@
         }
         #canvaFrame { width: 100%; height: 100%; border: none; }
 
-        /* ----- FIXED DRAGGABLE VIDEO (ĐÃ SỬA LỖI) ----- */
+        /* ----- FIXED DRAGGABLE VIDEO ----- */
         .video-corner {
             position: fixed; bottom: 30px; right: 90px; width: 320px; 
             background: #000; border: 3px solid var(--hust-red); border-radius: 10px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 5000;
             display: flex; flex-direction: column; overflow: hidden;
         }
-        
-        /* THANH NẮM KÉO MỚI */
         .drag-handle {
-            background: var(--hust-red);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            text-align: center;
-            padding: 5px 0;
-            cursor: move;
-            user-select: none;
-            letter-spacing: 1px;
+            background: var(--hust-red); color: white; font-size: 10px; font-weight: 700;
+            text-align: center; padding: 5px 0; cursor: move; user-select: none; letter-spacing: 1px;
         }
-        
-        /* Bỏ pointer-events: none để bấm được nút play */
         video { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 
         /* ----- CONTENT SECTIONS ----- */
@@ -123,12 +113,52 @@
         .img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 2s ease; }
         .row:hover img { transform: scale(1.1); }
 
-        /* ----- FORMULA SECTION ----- */
-        .formula-section { background: var(--hust-red); padding: 100px 0; text-align: center; color: white; position: relative; }
+        /* ----- FORMULA & CHART SECTION ----- */
+        .formula-section { background: var(--hust-red); padding: 80px 0; text-align: center; color: white; position: relative; }
         .formula-section::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.1; }
-        .formula-card { display: inline-block; padding: 40px 100px; background: white; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative; }
-        .formula-card h4 { font-size: 80px; color: var(--hust-red); font-weight: 900; letter-spacing: -2px; }
-        .formula-desc { margin-top: 35px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; font-size: 18px; }
+        
+        .formula-card { display: inline-block; padding: 30px 80px; background: white; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative; }
+        .formula-card h4 { font-size: 60px; color: var(--hust-red); font-weight: 900; letter-spacing: -2px; }
+        .formula-desc { margin-top: 20px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; font-size: 16px; }
+
+        /* CSS MỚI CHO SƠ ĐỒ SỐ LIỆU */
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 40px; margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px); position: relative; z-index: 10;
+        }
+        .chart-title { font-size: 20px; font-weight: 900; letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; text-shadow: 1px 1px 5px rgba(0,0,0,0.3); }
+        .chart-row { display: flex; align-items: center; margin-bottom: 30px; }
+        .chart-label { width: 140px; text-align: left; font-weight: 900; font-size: 18px; line-height: 1.3; }
+        .chart-label small { font-weight: 400; font-size: 12px; opacity: 0.8; text-transform: none; display: block; margin-top: 3px; }
+        
+        .chart-track {
+            flex-grow: 1; background: rgba(0,0,0,0.2); border-radius: 30px; height: 50px;
+            display: flex; align-items: center; padding: 5px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .chart-bar {
+            display: flex; height: 100%; border-radius: 25px; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        /* Độ dài biểu thị cho Tổng Giá trị (G) */
+        .japan-bar { width: 100%; }
+        .vn-bar { width: 35%; }
+
+        /* Tỷ lệ cấu thành bên trong */
+        .bar-c { display:flex; flex-direction:column; justify-content:center; align-items:center; background: var(--dark-gray); color: white; border-right: 1px solid rgba(255,255,255,0.2);}
+        .bar-v { display:flex; flex-direction:column; justify-content:center; align-items:center; background: white; color: var(--hust-red); border-right: 1px solid rgba(0,0,0,0.1);}
+        .bar-m { display:flex; flex-direction:column; justify-content:center; align-items:center; background: var(--chart-gold); color: var(--dark-gray);}
+        
+        .bar-text-main { font-size: 14px; font-weight: 900; }
+        .bar-text-sub { font-size: 10px; font-weight: 600; opacity: 0.9; }
+        .vn-bar .bar-text-sub { display: none; } /* Ẩn text phụ ở thanh VN vì ngắn */
+
+        .chart-legend { display: flex; justify-content: center; gap: 30px; margin-top: 40px; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .box-c { width: 16px; height: 16px; background: var(--dark-gray); border-radius: 4px; border: 1px solid rgba(255,255,255,0.5); }
+        .box-v { width: 16px; height: 16px; background: white; border-radius: 4px; }
+        .box-m { width: 16px; height: 16px; background: var(--chart-gold); border-radius: 4px; }
 
         /* ----- FOOTER ----- */
         .footer { padding: 80px 0; text-align: center; background: var(--dark-gray); color: white; border-top: 10px solid #444; }
@@ -167,7 +197,6 @@
         </div>
     </div>
 
-    <!-- KHUNG VIDEO CÓ THANH KÉO THẢ MỚI -->
     <div class="video-corner" id="videoDraggable">
         <div class="drag-handle" id="dragHandle">☰ NẮM ĐỂ DI CHUYỂN</div>
         <video id="vPlayer" controls></video>
@@ -196,6 +225,54 @@
             <div class="container">
                 <div class="formula-card"><h4>G = c + v + m</h4></div>
                 <p class="formula-desc">Học thuyết giá trị Mác - Lênin</p>
+
+                <div class="chart-container">
+                    <div class="chart-title">SO SÁNH MÔ PHỎNG CẤU TRÚC GIÁ TRỊ (G)</div>
+                    
+                    <div class="chart-row">
+                        <div class="chart-label">NHẬT BẢN <br><small>Tổng (G) rất cao</small></div>
+                        <div class="chart-track">
+                            <div class="chart-bar japan-bar">
+                                <div class="bar-c" style="width: 55%;">
+                                    <span class="bar-text-main">C (55%)</span>
+                                    <span class="bar-text-sub">Hạ tầng kháng chấn</span>
+                                </div>
+                                <div class="bar-v" style="width: 30%;">
+                                    <span class="bar-text-main">V (30%)</span>
+                                    <span class="bar-text-sub">Lương kỹ sư cao</span>
+                                </div>
+                                <div class="bar-m" style="width: 15%;">
+                                    <span class="bar-text-main">M (15%)</span>
+                                    <span class="bar-text-sub">Độc quyền</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-label">VIỆT NAM <br><small>Tổng (G) thấp</small></div>
+                        <div class="chart-track">
+                            <div class="chart-bar vn-bar">
+                                <div class="bar-c" style="width: 45%;">
+                                    <span class="bar-text-main">C</span>
+                                </div>
+                                <div class="bar-v" style="width: 40%;">
+                                    <span class="bar-text-main">V</span>
+                                </div>
+                                <div class="bar-m" style="width: 15%;">
+                                    <span class="bar-text-main">M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="box-c"></span> C: Tư liệu sản xuất</span>
+                        <span class="legend-item"><span class="box-v"></span> V: Sức lao động</span>
+                        <span class="legend-item"><span class="box-m"></span> M: Giá trị thặng dư</span>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -204,7 +281,7 @@
                 <div class="row reverse">
                     <div class="text-content">
                         <h3>02. <br>Hao phí hạ tầng (c)</h3>
-                        <p><strong>Lao động quá khứ:</strong> Tại Nhật Bản, cấu phần <strong>c</strong> mang tính chất đặc thù địa lý. Chi phí xây dựng trạm phát sóng chống động đất và địa tô mặt bằng đắt đỏ tại Tokyo đẩy giá trị kết tinh lên ngưỡng khổng lồ.</p>
+                        <p><strong>Lao động quá khứ:</strong> Nhìn vào sơ đồ, cấu phần <strong>C</strong> của Nhật chiếm tỷ trọng rất lớn. Chi phí xây dựng trạm phát sóng chống động đất và địa tô mặt bằng đắt đỏ tại Tokyo đẩy giá trị kết tinh lên ngưỡng khổng lồ.</p>
                         <p>Khấu hao thiết bị công nghệ cao chu kỳ ngắn buộc các nhà mạng phải duy trì giá bán cao để thu hồi vốn tư liệu sản xuất.</p>
                     </div>
                     <div class="img-wrap">
@@ -220,7 +297,7 @@
                     <div class="text-content">
                         <h3>03. <br>Sức lao động (v)</h3>
                         <p><strong>Lao động phức tạp:</strong> Ngành viễn thông yêu cầu kỹ sư có trình độ chuyên môn sâu. Marx khẳng định lao động phức tạp là bội số của lao động giản đơn.</p>
-                        <p>Giá trị sức lao động (v) tại Nhật Bản bao hàm cả chi phí sinh hoạt đắt đỏ để tái sản xuất sức lao động, trực tiếp làm tăng tổng giá trị dịch vụ đầu ra.</p>
+                        <p>Giá trị sức lao động (v) tại Nhật Bản bao hàm cả chi phí sinh hoạt đắt đỏ để tái sản xuất sức lao động. Cấu phần <strong>V</strong> to lớn này trực tiếp làm tăng tổng giá trị dịch vụ đầu ra.</p>
                     </div>
                     <div class="img-wrap">
                         <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200" alt="Engineering Center">
@@ -234,8 +311,8 @@
                 <div class="row reverse">
                     <div class="text-content">
                         <h3>04. <br>Giá trị thặng dư (m)</h3>
-                        <p><strong>Độc quyền nhóm:</strong> Thị trường viễn thông Nhật Bản nằm trong tay các tập đoàn lớn (NTT, SoftBank). Vị thế độc quyền giúp họ thiết lập giá cả độc quyền cao hơn giá trị thực tế để thu về thặng dư m cực đại.</p>
-                        <p>Ngược lại, Việt Nam là thị trường cạnh tranh cao, ép giá bán về sát chi phí sản xuất thực tế để thu hút số lượng lớn khách hàng.</p>
+                        <p><strong>Độc quyền nhóm:</strong> Thị trường viễn thông Nhật Bản nằm trong tay các tập đoàn lớn (NTT, SoftBank). Vị thế độc quyền giúp họ thiết lập giá cả độc quyền cao hơn giá trị thực tế để thu về thặng dư <strong>M</strong> cực đại.</p>
+                        <p>Ngược lại, thanh Giá trị của Việt Nam ngắn hơn do cạnh tranh khốc liệt, ép giá bán về sát chi phí sản xuất thực tế để thu hút số lượng lớn khách hàng.</p>
                     </div>
                     <div class="img-wrap">
                         <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200" alt="Market Analysis">
@@ -285,7 +362,6 @@
         document.addEventListener("mousemove", drag);
         
         function dragStart(e) {
-            // Cập nhật: Chỉ kích hoạt kéo thả khi click vào thanh "☰ NẮM ĐỂ DI CHUYỂN"
             if (e.target === dragHandle) {
                 initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true;
             }
@@ -298,7 +374,7 @@
             }
         }
 
-        // HIỆU ỨNG CUỘN (FADE-IN)
+        // HIỆU ỨNG CUỘN
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
         }, { threshold: 0.1 });
