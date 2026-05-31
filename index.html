@@ -28,7 +28,7 @@
             scroll-behavior: smooth; 
         }
 
-        /* ----- SIDE PANELS (TRANG TRÍ 2 BÊN) ----- */
+        /* ----- SIDE PANELS ----- */
         .side-panel {
             position: fixed; top: 0; width: 60px; height: 100vh;
             display: flex; align-items: center; justify-content: center;
@@ -43,7 +43,7 @@
             text-transform: uppercase;
         }
 
-        /* ----- HEADER (TOP BAR) ----- */
+        /* ----- HEADER ----- */
         .top-bar {
             background: rgba(255, 255, 255, 0.95); padding: 10px 80px; display: flex;
             justify-content: space-between; align-items: center; 
@@ -53,11 +53,8 @@
             backdrop-filter: blur(10px);
         }
         .brand { display: flex; align-items: center; gap: 20px; }
-        
-        /* CẬP NHẬT HÌNH ẢNH CỜ */
         .flag-group { display: flex; gap: 8px; align-items: center; }
         .flag-img { width: 35px; height: auto; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee; }
-
         .logo-text-box { border-left: 2px solid var(--border); padding-left: 15px; }
         .logo-text-box h1 { color: var(--hust-red); font-weight: 900; font-size: 18px; line-height: 1; margin-bottom: 2px; }
         .logo-text-box p { color: var(--dark-gray); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -75,7 +72,7 @@
         .canva-input-group input { background: transparent; border: none; padding: 8px 12px; width: 250px; outline: none; font-size: 12px; }
         .canva-input-group button { background: var(--dark-gray); color: white; border: none; padding: 0 15px; font-weight: 700; cursor: pointer; font-size: 11px; }
 
-        /* ----- MAIN STAGE (CANVA EMBED) ----- */
+        /* ----- MAIN STAGE ----- */
         .stage { padding: 40px 100px; background-color: var(--light-bg); border-bottom: 1px solid var(--border); }
         .viewer-container {
             width: 100%; max-width: 1100px; margin: 0 auto; height: 65vh; background: white;
@@ -84,14 +81,29 @@
         }
         #canvaFrame { width: 100%; height: 100%; border: none; }
 
-        /* ----- FIXED DRAGGABLE VIDEO ----- */
+        /* ----- FIXED DRAGGABLE VIDEO (ĐÃ SỬA LỖI) ----- */
         .video-corner {
-            position: fixed; bottom: 30px; right: 90px; width: 300px; aspect-ratio: 16/9;
+            position: fixed; bottom: 30px; right: 90px; width: 320px; 
             background: #000; border: 3px solid var(--hust-red); border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 5000; cursor: move;
-            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 5000;
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        
+        /* THANH NẮM KÉO MỚI */
+        .drag-handle {
+            background: var(--hust-red);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            padding: 5px 0;
+            cursor: move;
+            user-select: none;
+            letter-spacing: 1px;
+        }
+        
+        /* Bỏ pointer-events: none để bấm được nút play */
+        video { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 
         /* ----- CONTENT SECTIONS ----- */
         .section-box { padding: 120px 0; }
@@ -155,7 +167,9 @@
         </div>
     </div>
 
+    <!-- KHUNG VIDEO CÓ THANH KÉO THẢ MỚI -->
     <div class="video-corner" id="videoDraggable">
+        <div class="drag-handle" id="dragHandle">☰ NẮM ĐỂ DI CHUYỂN</div>
         <video id="vPlayer" controls></video>
     </div>
 
@@ -233,8 +247,8 @@
 
     <div class="footer">
         <h5>ĐẠI HỌC BÁCH KHOA HÀ NỘI</h5>
-        <p>Sinh viên thực hiện: Phạm Minh Chiến | Giảng viên Bộ môn Kinh tế Chính trị : Ngô Quế Lân | Mã học phần SSH1121.</p>
-        <p style="margin-top: 15px;">© 30/4/2026-31/5/2026 Final Year Project - HUST Department of Politics</p>
+        <p>Sinh viên thực hiện: Phạm Minh Chiến | Giảng viên hướng dẫn: Bộ môn Kinh tế Chính trị</p>
+        <p style="margin-top: 15px;">© 2024 Final Year Project - HUST Department of Politics</p>
     </div>
 
     <script>
@@ -244,7 +258,7 @@
             if (file) { document.getElementById('vPlayer').src = URL.createObjectURL(file); }
         });
 
-        // XỬ LÝ NHÚNG CANVA (Lọc mã HTML)
+        // XỬ LÝ NHÚNG CANVA
         function loadCanva() {
             let inputVal = document.getElementById('canvaUrl').value.trim();
             let finalUrl = "";
@@ -261,13 +275,18 @@
             }
         }
 
-        // KÉO THẢ VIDEO (DRAG & DROP)
+        // KÉO THẢ VIDEO QUA THANH DRAG HANDLE
         const dragItem = document.getElementById("videoDraggable");
+        const dragHandle = document.getElementById("dragHandle");
         let active = false; let currentX, currentY, initialX, initialY; let xOffset = 0, yOffset = 0;
-        document.addEventListener("mousedown", dragStart); document.addEventListener("mouseup", dragEnd); document.addEventListener("mousemove", drag);
+        
+        document.addEventListener("mousedown", dragStart); 
+        document.addEventListener("mouseup", dragEnd); 
+        document.addEventListener("mousemove", drag);
         
         function dragStart(e) {
-            if (e.target.closest('#videoDraggable')) {
+            // Cập nhật: Chỉ kích hoạt kéo thả khi click vào thanh "☰ NẮM ĐỂ DI CHUYỂN"
+            if (e.target === dragHandle) {
                 initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true;
             }
         }
